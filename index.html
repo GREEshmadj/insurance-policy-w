@@ -265,22 +265,22 @@ const firebaseConfig = {
         maturity
       };
 
-      fetch(scriptURL, {
+        fetch("/api/submitForm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
-      })
-      .then(async res => {
-        const text = await res.text();
-        console.log("📥 Raw response:", text);
+        })
+        .then(res => res.text())
+        .then(text => {
         document.getElementById("result").innerHTML += 
-          `<p style="color: lightgreen;">Server says: ${text}</p>`;
-      })
-      .catch(err => {
-        console.error("❌ Network error:", err);
+            `<p style="color: lightgreen;">Server says: ${text}</p>`;
+        })
+        .catch(err => {
+        console.error(err);
         document.getElementById("result").innerHTML += 
-          `<p style="color: red;">❌ Failed to submit form (Network error)</p>`;
-      });
+            `<p style="color: red;">❌ Failed to submit form</p>`;
+        });
+
 
     });
   </script>
