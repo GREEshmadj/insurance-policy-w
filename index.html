@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insurance Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  
+
+</head>
+<body>
+<!-- Authentication Check & Navbar -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  push
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAym5oL_pla7186Vp-VVzZlRFjlhhzStIs",
+  authDomain: "insurance-policy-b0f63.firebaseapp.com",
+  databaseURL: "https://insurance-policy-b0f63-default-rtdb.firebaseio.com", // ✅ ADD THIS LINE
+  projectId: "insurance-policy-b0f63",
+  storageBucket: "insurance-policy-b0f63.appspot.com",
+  messagingSenderId: "508879055605",
+  appId: "1:508879055605:web:ddf224e92ebc049333b3bc",
+  measurementId: "G-ZT854ZEHRC"
+};
+
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+    window.db = db;
+    window.pushData = (data) => {
+      return push(ref(db, "formResponses"), data);
+    };
+
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
+  window.logout = function () {
+    signOut(auth).then(() => {
+      alert("Logged out successfully.");
+      window.location.href = "login.html";
+    });
+  };
+</script>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="images/Golden Trident with Red Ribbon.png" alt="Logo" class="logo" />
+    <span class="company-name">SARVAASTRA</span>
+  </div>
+
+  <!-- Hamburger Icon (only for phone) -->
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+  <div class="nav-links" id="navLinks">
+    <a href="#hero">Home</a>
+    <a href="#services">Services</a>
+    <a href="#investment">Investment Calculator</a>
+    <a href="#life-insurance">Life Insurance</a>
+    <a href="#other-services">Other Services</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <div class="nav-right">
+    <button onclick="logout()">Logout</button>
+  </div>
+</nav>
+<script>
+  // ✅ Toggle menu for mobile
+  function toggleMenu() {
+    var navLinks = document.getElementById("navLinks");
+    navLinks.classList.toggle("active"); // use CSS class instead of inline styles
+  }
+
+  // ✅ Don't redefine logout if already defined in Firebase script
+  if (typeof logout !== "function") {
+    window.logout = function () {
+      alert("Logging out...");
+      // fallback logout logic
+    };
+  }
+</script>
+<div class="overlay">
+  <!-- Hero Section -->
+  <header class="hero" id="hero">
+    <img src="/images/Golden Trident with Red Ribbon.png" alt="Insurance Logo" class="hero-logo" />
+    <h1>What is Insurance?</h1>
+    <p>
+      Insurance is a financial safety net that helps you recover from unexpected events.<br>
+      It protects your health, property, and loved ones.
+    </p>
+    <div class="hero-tags">
+      <span>✅ General Insurance</span>
+      <span>❤️ Life Insurance</span>
+      <span>🏠 Housing Loans</span>
+    </div>
+  </header>
+</div>
+
+<!-- Our Services -->
+<section class="services" id="services">
+
+  <div class="service-box">
+    <div class="service-content">
+      <div class="service-image">
+        <img src="images/health.png" alt="Health Insurance">
+      </div>
+      <div class="service-text">
+        <h3>🏥 Health Insurance</h3>
+        <p>Cover medical bills, treatments & hospital stays.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="service-box reverse">
+    <div class="service-content">
+      <div class="service-text">
+        <h3>🎓 Child & Education Plans</h3>
+        <p>Save smartly for your child’s bright future.</p>
+      </div>
+      <div class="service-image">
+        <img src="images/education.png" alt="Child & Education Plans">
+      </div>
+    </div>
+  </div>
+
+  <div class="service-box">
+    <div class="service-content">
+      <div class="service-image">
+        <img src="images/life.png" alt="Life Insurance">
+      </div>
+      <div class="service-text">
+        <h3>🏠 Life Insurance</h3>
+        <p>Financial support for your family in your absence.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="service-box reverse">
+    <div class="service-content">
+      <div class="service-text">
+        <h3>🚗 Vehicle Insurance</h3>
+        <p>Secure your car or bike from accidents or theft.</p>
+      </div>
+      <div class="service-image">
+        <img src="images/vehicle.png" alt="Vehicle Insurance">
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!--investment calculator-->>
+
+<section class="investment" id="investment">
+  <h2 class="section-title">LIC Investment Calculator</h2>
+  <h3 style="color: rgb(0, 0, 0);">
+    Get the best LIC plan suggestion based on your age, amount, and preferences.
+  </h3>
+
+  <form id="calcForm">
+    <input type="text" id="name" placeholder="Name" required><br>
+    <input type="number" id="number" placeholder="Phone Number" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="number" id="age" placeholder="Age" required><br>
+    <input type="number" id="amount" placeholder="Monthly Amount" required><br>
+    <input type="number" id="years" placeholder="Years" required><br>
+    <input type="number" id="rate" placeholder="Interest Rate %" required><br>
+    <button type="submit">Calculate</button>
+  </form>
+
+  <div id="result" style="border: 2px solid hsla(354, 11%, 39%, 0.849); padding: 20px; text-align: center; background-color: #755f5f; color: white;"></div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzyi7fCHX8ifSvroG1FDEZAR71Frp0Hg2x_fkWvutowZ3LZS2E-j2DeW7mXzRGwJmqW/exec";
+
+    document.getElementById("calcForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const age = parseInt(document.getElementById("age").value);
+      const monthly = parseFloat(document.getElementById("amount").value);
+      const years = parseInt(document.getElementById("years").value);
+      const rate = parseFloat(document.getElementById("rate").value) / 100;
+      const name = document.getElementById("name").value.trim();
+      const number = document.getElementById("number").value.trim();
+      const gmail = document.getElementById("email").value.trim();
+
+      const result = document.getElementById("result");
+
+      if (
+        isNaN(age) || isNaN(monthly) || isNaN(years) || isNaN(rate) ||
+        !name || !number || !gmail
+      ) {
+        result.innerHTML = "❗ All fields are required and must be valid.";
+        return;
+      }
+
+      // 📊 Calculation
+      const months = years * 12;
+      const monthlyRate = rate / 12;
+      const maturity = monthly * ((Math.pow(1 + monthlyRate, months) - 1) * (1 + monthlyRate) / monthlyRate);
+      const invested = monthly * months;
+      const interest = maturity - invested;
+
+      let scheme = "";
+      let plans = [];
+
+      // ✅ Same if–else plan selection
+      if (age < 35 && years >= 15) {
+        scheme = "ULIP (Market-Linked Investment)";
+        plans = ["LIC's SIIP", "LIC's New Endowment Plus"];
+      } else if (age <= 45 && years >= 15) {
+        scheme = "Endowment Plan (Bonus + Insurance)";
+        plans = ["New Endowment - 714", "Jeevan Anand - 715", "Single Premium Endowment - 717"];
+      } else if (years < 15 && age < 45) {
+        scheme = "Money Back Plan (Payout every few years)";
+        plans = ["20Y Money Back - 820", "Children Money Back - 832", "Jeevan Tarun - 834"];
+      } else if (age >= 50 && years >= 10) {
+        scheme = "Pension Plan (Monthly Income)";
+        plans = ["Jeevan Akshay", "Jeevan Shanti", "New Jeevan Nidhi"];
+      } else {
+        scheme = "Term Plan (Pure Protection)";
+        plans = ["Tech Term Plan", "Anmol Jeevan", "Amulya Jeevan"];
+      }
+
+      // 🖥️ Show results
+      result.innerHTML = `
+        <strong>✅ Suggested Plan Type:</strong> ${scheme}<br><br>
+        <strong>📋 Matching LIC Plans:</strong><br>
+        <ul>${plans.map(p => `<li>${p}</li>`).join("")}</ul><br>
+        <strong>💰 Total Invested:</strong> ₹${invested.toLocaleString()}<br>
+        <strong>📈 Estimated Interest:</strong> ₹${interest.toLocaleString()}<br>
+        <strong>🔓 Maturity Amount:</strong> ₹${maturity.toLocaleString()}
+      `;
+
+      // 📤 Data to Google Sheet
+      const data = {
+        name,
+        number,
+        gmail,
+        age,
+        amount: monthly,
+        years,
+        rate: rate * 100, // back to %
+        scheme,
+        plans,
+        invested,
+        interest,
+        maturity
+      };
+
+      fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(async res => {
+        const text = await res.text();
+        console.log("📥 Raw response:", text);
+        document.getElementById("result").innerHTML += 
+          `<p style="color: lightgreen;">Server says: ${text}</p>`;
+      })
+      .catch(err => {
+        console.error("❌ Network error:", err);
+        document.getElementById("result").innerHTML += 
+          `<p style="color: red;">❌ Failed to submit form (Network error)</p>`;
+      });
+
+    });
+  </script>
+</section>
+
+<!--life insurance -->
+<section id="life-insurance">
+  <h2 class="section-title">💼 Life Insurance Plans</h2>
+  <p class="section-subtitle">Secure your family's future with plans tailored for every stage of life.</p>
+
+  <!-- Endowment Plans -->
+  <div class="insurance-block">
+    <img src="/images/endowment.png" alt="Endowment Plan Image" class="plan-image" />
+    <div class="plan-box">
+      <h3>🟤 Endowment Plans</h3>
+      <ul>
+        <li>New Endowment - 714</li>
+        <li>New Jeevan Anand - 715</li>
+        <li>Single Premium Endowment - 717</li>
+        <li>Jeevan Lakshya - 733</li>
+        <li>Jeevan Labh - 736</li>
+        <li>Bima Jyoti - 760</li>
+        <li>Jeevan Azad - 768</li>
+        <li>Nav Jeevan Shree (Single) - 911</li>
+        <li>Nav Jeevan Shree (Limited) - 912</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MoneyBack Plans -->
+  <div class="insurance-block">
+    <img src="/images/money back.png" alt="Moneyback Plan Image" class="plan-image" />
+    <div class="plan-box">
+      <h3>🟣 MoneyBack Plans</h3>
+      <ul>
+        <li>MoneyBack (20 Year) - 720</li>
+        <li>MoneyBack (25 Year) - 721</li>
+        <li>Bima Shree - 748</li>
+        <li>Bima Ratna - 764</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Term Plans -->
+  <div class="insurance-block">
+    <img src="/images/term.png" alt="Term Plan Image" class="plan-image" />
+    <div class="plan-box">
+      <h3>🔵 Term Plans</h3>
+      <ul>
+        <li>Saral Jeevan Bima - 859</li>
+        <li>Yuva Term - 875</li>
+        <li>Yuva Credit Life - 877</li>
+        <li>New Jeevan Amar - 955</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pension Plans -->
+  <div class="insurance-block">
+    <img src="/images/pension.png" alt="Pension Plan Image" class="plan-image" />
+    <div class="plan-box">
+      <h3>🟢 Pension Plans</h3>
+      <ul>
+        <li>New Jeevan Shanti - 758</li>
+        <li>Saral Pension - 862</li>
+        <li>Jeevan Akshay-VII - 857</li>
+        <li>Smart Pension - 879</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ULIP Plans -->
+  <div class="insurance-block">
+    <img src="/images/udip.png" alt="ULIP Plan Image" class="plan-image" />
+    <div class="plan-box">
+      <h3>🔶 ULIP Plans</h3>
+      <ul>
+        <li>Endowment Plus - 735</li>
+        <li>Nivesh Plus - 749</li>
+        <li>SIIP - 752</li>
+        <li>New Pension Plus - 867</li>
+        <li>Index Plus - 873</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- Other Services Section -->
+ <section id="other-services">
+   <h1 class="os-heading">Other services we provide</h1> 
+  <h2 class="os-subheading">The reason why we are your one stop destination</h2>
+
+  <!-- CARD 1 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Corporate Gifting</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <!-- Images Pane -->
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/corp6.png" alt="Corporate gifting sample 1">
+          </div>
+          <div class="os-thumbs">
+            <img class="is-active" src="images/corp4.png" data-full="images/corporate-1.jpg" alt="Corporate gifting thumb 1">
+            <img src="images/corp3.png" data-full="images/corporate-2.jpg" alt="Corporate gifting thumb 2">
+            <img src="images/corp2.png" data-full="images/corporate-3.jpg" alt="Corporate gifting thumb 3">
+          </div>
+        </div>
+      </div>
+
+      <!-- Details Pane -->
+      <div class="os-pane os-pane--details" hidden>
+        <p>With a passion for creativity, we transforms gifting into an experience that blends elegance, sustainability, and heartfelt emotions. Our curated collection features premium, eco-friendly gifts, thoughtfully crafted to create lasting memories. Whether it’s expressing love, appreciation, or pure joy, every piece reflects artistry, tradition, and a commitment to responsible gifting. 
+
+            Celebrate life’s milestones with exquisite gifts that honor the vibrant spirit of Indian traditions. From joyous beginnings to treasured memories, every occasion deserves a touch of magic. Our carefully curated collection reflects the richness of Indian culture, ensuring that every gift becomes a cherished part of the recipient’s journey.
+
+            From Diwali’s radiant lights to Holi’s vibrant colors, find gifts that honor the traditions and warmth of Indian festivals. Designed to bring families and communities together, our festival gifting collection turns every moment into a cherished memory.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 2 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Training & Learning</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/tl1.png" alt="Training session 1">
+          </div>
+          <div class="os-thumbs">
+            <img class="is-active" src="images/tl2.png" data-full="images/training-1.jpg" alt="Training thumb 1">
+
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p><b>Diagnostic and Customized Solutions (Diagnosis, Design, Deployment, Discipline)</b>
+           <br> <b>•	Diagnosis:</b> We begin with an in-depth assessment of organizational challenges—identifying disengagement, mindset barriers, and growth roadblocks.
+            <br><b>•	Design:</b> Based on the diagnostic insights, we craft highly tailored interventions aligned with your specific objectives.
+            <br><b>•	Deployment:</b> Our experienced facilitators ensure smooth implementation with maximum impact and minimal disruption.
+            <br><b>•	Discipline:</b> We offer ongoing monitoring and evaluation, ensuring sustained improvements over time.
+            <br>This structured methodology ensures your investment delivers measurable ROI and long-term results.
+
+            <br><b>Core Programs We Offer
+            <br>•	Winning to Lead</b>
+            <br>A six-week, immersive program fostering individual leadership—helping participants manage themselves, their tasks, and their teams effectively. 
+            <br><b>•	Winning Teams</b>
+            <br>A two-day, team-building and effectiveness workshop designed to:
+            <br>o	Build cohesion and trust
+            <br>o	Enhance communication
+            <br>o	Align team members with a shared vision
+            <br>Customizable for leadership groups, new teams, project teams, and retreats. 
+            <br><b>•	Inspire & Win</b>
+            <br>A program tailored for supervisory-level professionals—especially in manufacturing environments—that focuses on core leadership foundations and inspiring performance. 
+            <br><b>•	Winning Edge</b>
+            <br>A high-impact motivation and communication workshop for sales teams, focused on leveraging strengths and boosting market effectiveness. <br><br>
+            Our Approach & Philosophy
+            <br><b>•	Experiential Learning for Adults</b>
+            <br>Grounded in “adult learning” principles, our programs foster internal discovery and sustained behavioral change—not rote, lecture-based sessions. 
+            <br><b>•	Strength-Based Interventions</b>
+            <br>We focus on building from existing strengths rather than highlighting weaknesses. Our process-driven methods are proprietary and results-focused. 
+            <br><b>•	Mindset Transformation</b>
+            <br>Guided by the philosophy of “I Can, You Can, We Can,” our aim is to shift mindsets, nurture confidence, and unlock full potential. <br>
+
+            <br><b>Suggested Website Section
+            <br>This Is What We Provide
+            <br>•	Strategic Human Capital Transformation</b>
+            <br>From diagnosis to sustained improvement, our four-pillar process ensures measurable growth.
+            <br><b>•	Tailored Training Programs</b>
+            <br>o	Winning to Lead – 6-week leadership enhancement
+            <br>o	Winning Teams – 2-day team effectiveness accelerator
+            <br>o	Inspire & Win – Leadership build-up for supervisors
+            <br>o	Winning Edge – Sales motivation and performance booster
+            <br><b>•	Mindset and Behavior-Driven Approach</b>
+            <br>Focused on adult learning, leveraging strengths, and building a resilient “I Can” culture.
+            <br><b>•	Proven Outcomes, Broad Reach, Deep Impact</b>
+            <br>Two decades of experience, 250+ clients, serving over 31 cities across varied sectors.
+</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 3 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Event Management</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/em1.png" alt="Event setup 1">
+          </div>
+          <div class="os-thumbs">
+            <img class="is-active" src="images/em2.png" data-full="images/event-1.jpg" alt="Event thumb 1">
+            <img src="images/em3.png" data-full="images/event-2.jpg" alt="Event thumb 2">
+
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p><h2>Our Event Management Services</h2>
+        We believe every event should be <b>unique, memorable, and perfectly executed</b>.<br>
+        Whether it’s a small celebration or a large-scale corporate gathering, our team ensures that every detail is thoughtfully planned and flawlessly delivered.
+
+        <b>1. Corporate Events</b><br>
+        • <b>Conferences & Seminars</b> – End-to-end planning, venue setup, branding, and technical support.<br>
+        • <b>Product Launches</b> – Creative concepts, stage design, and audience engagement strategies.<br>
+        • <b>Award Ceremonies</b> – Elegant setups, lighting, and memorable stage experiences.<br>
+        • <b>Team-Building Activities</b> – Outdoor and indoor programs tailored to boost collaboration.<br><br>
+
+        <b>2. Social & Personal Events</b><br>
+        • <b>Weddings & Engagements</b> – From theme selection to décor, entertainment, and guest management.<br>
+        • <b>Birthday Parties</b> – Fun-filled themes, customized decorations, and activities for all ages.<br>
+        • <b>Anniversary Celebrations</b> – Elegant setups and personal touches to make the day unforgettable.<br>
+        • <b>Family Gatherings & Reunions</b> – Coordinated seating, catering, and entertainment arrangements.<br><br>
+
+        <b>3. Exhibitions & Trade Shows</b><br>
+        • Booth design, signage, and branding<br>
+        • Space management and crowd flow planning<br>
+        • Logistics coordination and on-site support<br><br>
+
+        <b>4. Cultural & Community Events</b><br>
+        • <b>Festivals & Fairs</b> – Stage programming, artist management, and theme décor.<br>
+        • <b>College & School Events</b> – Annual days, talent shows, and themed competitions.<br>
+        • <b>Charity & Fundraising Events</b> – Professional planning that inspires participation and donations.<br><br>
+
+        <b>5. Special Event Enhancements</b><br>
+        • <b>Theme Décor & Styling</b> – From classic elegance to bold creativity.<br>
+        • <b>Sound, Lighting & Stage Production</b> – Professional audio-visual arrangements for maximum impact.<br>
+        • <b>Photography & Videography</b> – Capturing moments that last forever.<br>
+        • <b>Entertainment Management</b> – Musicians, DJs, dancers, emcees, and celebrity appearances.<br>
+        • <b>Catering Services</b> – Menus tailored to your event style and audience preferences.<br><br>
+
+        <b>6. End-to-End Event Coordination</b><br>
+        • Concept & Theme Development<br>
+        • Budget Planning & Vendor Management<br>
+        • Invitations & Guest List Handling<br>
+        • Venue Selection & Contract Negotiation<br>
+        • On-Site Event Supervision & Crisis Management<br><br>
+
+        <b>Why Choose Us?</b><br>
+        • Creative concepts with attention to detail<br>
+        • Transparent budgeting with no hidden costs<br>
+        • Strong network of trusted vendors and partners<br>
+        • Proven track record of executing events that leave a lasting impression<br><br>
+
+        ✨ <b>“We Turn Your Ideas into Unforgettable Experiences”</b><br>
+        🎯 <b>“From Concept to Celebration – We Handle It All”</b></p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 4 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Corporate & Institutional Supplies</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/ci1.png" alt="Corporate & Institutional Supplies 1">
+          </div>
+          <div class="os-thumbs">
+            <img class="is-active" src="images/ci2.png" data-full="images/ci2.png" alt="Corporate & Institutional Supplies thumb 1">
+            <img src="images/ci3.png" data-full="images/ci3.png" alt="Corporate & Institutional Supplies thumb 2">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p><b>Corporate & Institutional Supplies</b><br><br>
+
+            We specialize in providing <b>high-quality printing services</b> and <b>daily consumables</b> for colleges, companies, events, and organizations of all sizes.<br>
+            Whether you need custom-branded merchandise, professional stationery, or bulk consumables, we deliver <b>quality, consistency, and on-time service</b> every time.<br><br>
+
+            <b>Our Printing & Customization Services</b><br>
+            We bring your brand to life with customized designs and premium printing techniques for:<br>
+            • <b>Pens & Stationery Printing</b> – Personalized pens, pencils, and stationery sets for branding and giveaways.<br>
+            • <b>Diaries & Notebooks</b> – Customized covers, company logos, and event branding.<br>
+            • <b>Badges & ID Cards</b> – Event badges, staff IDs, and visitor passes with high-quality printing.<br>
+            • <b>Glass & Mug Printing</b> – Customized drinkware for corporate gifting, events, or promotional use.<br>
+            • <b>T-Shirts & Apparel Printing</b> – Logo prints, event themes, and uniforms.<br>
+            • <b>Banners & Posters</b> – Large-format printing for promotions, conferences, and events.<br><br>
+
+            <b>Daily & Bulk Consumables Supply</b><br>
+            We provide day-to-day operational essentials to keep your organization running smoothly:<br>
+            • Office stationery & writing supplies<br>
+            • Notebooks, diaries, and registers<br>
+            • File folders, envelopes, and organizers<br>
+            • Event consumables (lanyards, tags, badges, etc.)<br>
+            • Customized packaging materials<br><br>
+
+            <b>Who We Serve</b><br>
+            • <b>Colleges & Universities</b> – Event materials, branded stationery, student ID cards, fest merchandise.<br>
+            • <b>Corporate Offices</b> – Employee welcome kits, branded pens, diaries, and office supplies.<br>
+            • <b>Event Organizers</b> – Badges, banners, giveaways, and promotional items.<br>
+            • <b>Shops & Retailers</b> – Bulk supply of branded or plain consumables.<br><br>
+
+            <b>Why Choose Us?</b><br>
+            • <b>Custom Design Support</b> – From concept to final print.<br>
+            • <b>Bulk Order Expertise</b> – Cost-effective solutions without compromising quality.<br>
+            • <b>Quick Turnaround</b> – On-time delivery for urgent requirements.<br>
+            • <b>One-Stop Solution</b> – Printing, branding, and consumable supply all under one roof.<br>
+            </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 5 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Auditing & Taxation Services</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/auditing.png" alt="Auditing & Taxation Services 1">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p>
+            We provide <b>reliable, accurate, and timely financial services</b> to help businesses, organizations, and individuals maintain compliance, optimize tax benefits, and ensure smooth financial operations.<br>
+            Our team ensures that every process follows statutory requirements while delivering insights that add value to your growth.
+            <br>
+
+            <b>Our Auditing Services</b><br>
+            We offer comprehensive audit solutions to assess and enhance your financial health:<br>
+            • <b>Statutory Audit</b> – Ensuring compliance with legal and regulatory frameworks.<br>
+            • <b>Internal Audit</b> – Reviewing internal controls, operations, and risk management practices.<br>
+            • <b>Tax Audit</b> – Compliance with income tax laws and regulations.<br>
+            • <b>Management Audit</b> – Evaluating operational efficiency and resource utilization.<br>
+            • <b>Stock & Inventory Audit</b> – Verification of physical stock and valuation.<br>
+            • <b>Compliance Audit</b> – Checking adherence to company laws, labor laws, and other regulations.<br><br>
+
+            <b>Our Taxation Services</b><br>
+            We help you plan, manage, and file taxes effectively while staying fully compliant:<br>
+            • <b>Income Tax Filing & Planning</b> – For individuals, firms, and companies.<br>
+            • <b>GST Registration & Filing</b> – Monthly, quarterly, and annual returns.<br>
+            • <b>TDS/TCS Compliance</b> – Filing returns and issuing certificates.<br>
+            • <b>Corporate Tax Advisory</b> – Tax structuring for companies and partnerships.<br>
+            • <b>Indirect Tax Services</b> – GST audits, refund claims, and compliance.<br>
+            • <b>Tax Dispute Assistance</b> – Representation before tax authorities.<br><br>
+
+            <b>Specialized Financial Services</b><br>
+            • <b>Business Registration & Incorporation</b> – LLP, Private Limited, Partnership, and Proprietorship setup.<br>
+            • <b>Bookkeeping & Accounting</b> – Accurate records for smooth financial management.<br>
+            • <b>Payroll Processing</b> – Salary structuring, PF, ESI, and compliance.<br>
+            • <b>Financial Consulting</b> – Cost analysis, budgeting, and profitability planning.<br><br>
+
+            <b>Who We Serve</b><br>
+            • Startups & Entrepreneurs<br>
+            • Small & Medium Enterprises (SMEs)<br>
+            • Corporates & MNCs<br>
+            • Educational Institutions<br>
+            • NGOs & Trusts<br>
+            • Individual Professionals<br><br>
+
+            <b>Why Choose Us?</b><br>
+            • <b>Expert Team</b> – Experienced auditors and tax consultants.<br>
+            • <b>Transparent Process</b> – Clear communication and honest pricing.<br>
+            • <b>Compliance First</b> – Ensuring zero penalties and smooth operations.<br>
+            • <b>Client-Centric Approach</b> – Tailored solutions for your specific needs.<br></p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 6 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Legal Services</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/legal.png" alt="Legal Services">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p>
+        We provide <b>comprehensive legal support and consultancy</b> for individuals, businesses, and organizations.<br>
+        Our services are designed to <b>ensure compliance, protect your rights, and provide clear solutions</b> to complex legal challenges.<br>
+        Whether you need corporate legal assistance, documentation, or dispute resolution, our expert team is here to guide you at every step.
+        <br>
+
+        <b>Our Legal Service Offerings</b><br><br>
+
+        <b>1. Corporate & Business Legal Services</b><br>
+        • Business registration & incorporation (Private Limited, LLP, Partnership, Proprietorship)<br>
+        • Drafting & reviewing contracts, agreements, and MoUs<br>
+        • Company law compliance & secretarial services<br>
+        • Mergers, acquisitions, and restructuring legal support<br>
+        • Intellectual Property Rights (IPR) – trademark, copyright, patent filing, and protection<br><br>
+
+        <b>2. Employment & Labour Law</b><br>
+        • Drafting employee contracts and HR policies<br>
+        • Compliance with labor laws, PF, ESI, gratuity, and wage regulations<br>
+        • Handling disputes related to employment and workplace policies<br><br>
+
+        <b>3. Taxation & Regulatory Compliance</b><br>
+        • Legal advisory on GST, Income Tax, and corporate tax matters<br>
+        • Representation before tax authorities<br>
+        • Regulatory filings with ROC, SEBI, RBI, etc.<br><br>
+
+        <b>4. Civil & Criminal Matters</b><br>
+        • Property disputes & real estate legal assistance<br>
+        • Consumer protection cases<br>
+        • Cheque bounce and financial dispute cases<br>
+        • Civil litigation & arbitration<br>
+        • Criminal defense advisory and representation<br><br>
+
+        <b>5. Family & Personal Legal Services</b><br>
+        • Marriage registration, divorce, and family dispute resolution<br>
+        • Succession planning and will drafting<br>
+        • Legal support in inheritance and property partition matters<br><br>
+
+        <b>6. Documentation & Drafting</b><br>
+        • Agreements (rental, lease, partnership, franchise, vendor, supplier, etc.)<br>
+        • Notices, affidavits, and power of attorney<br>
+        • Legal vetting of documents for risk minimization<br><br>
+
+        <b>Who We Serve</b><br>
+        • <b>Businesses & Corporates</b> – Compliance, contracts, and regulatory support<br>
+        • <b>Startups & Entrepreneurs</b> – Registration, agreements, and IPR protection<br>
+        • <b>Individuals & Families</b> – Personal legal issues, family disputes, succession planning<br>
+        • <b>Institutions & NGOs</b> – Legal structuring, compliance, and dispute resolution<br><br>
+
+        <b>Why Choose Us?</b><br>
+        • <b>Expert Guidance</b> – Experienced lawyers with multi-domain expertise<br>
+        • <b>End-to-End Legal Support</b> – From advisory to representation<br>
+        • <b>Confidential & Trustworthy</b> – Secure handling of sensitive matters<br>
+        • <b>Affordable & Transparent</b> – Clear fee structure with no hidden charges<br>
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 7 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Website & Digital Services</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/web1.png" alt="Website & Digital Services 1">
+          </div>
+          <div class="os-thumbs">
+            <img class="is-active" src="images/web2.png" data-full="images/web2.png" alt="Website & Digital Services thumb 1">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p>
+            In today’s <b>digital-first world</b>, your <b>online presence</b> is your strongest identity.<br>
+            We provide <b>end-to-end website development and digital solutions</b> that help businesses, startups, institutions, and individuals build credibility, attract customers, and grow faster.<br>
+            From designing a stunning website to boosting your online visibility, we make sure your <b>digital journey is smooth and impactful.</b>
+            <br>
+
+            <b>Our Website Services</b><br><br>
+
+            <b>Website Design & Development</b><br>
+            • Business websites, college/institutional sites, e-commerce stores, and portfolios<br>
+            • Modern, responsive designs that work seamlessly on all devices<br>
+            • Tailor-made layouts for your brand identity<br><br>
+
+            <b>E-Commerce Solutions</b><br>
+            • Complete setup of online stores<br>
+            • Secure payment gateway integration<br>
+            • Inventory management systems<br><br>
+
+            <b>Website Maintenance & Support</b><br>
+            • Regular updates, backups, and security checks<br>
+            • Performance optimization for speed and stability<br>
+            • Troubleshooting and bug fixing<br><br>
+
+            <b>Digital Services We Provide</b><br><br>
+
+            <b>Search Engine Optimization (SEO)</b><br>
+            • On-page & off-page optimization<br>
+            • Local SEO for businesses targeting regional audiences<br>
+            • Keyword ranking and performance tracking<br><br>
+
+            <b>Social Media Marketing (SMM)</b><br>
+            • Account setup & management (Instagram, Facebook, LinkedIn, etc.)<br>
+            • Campaign planning, content creation, and ad management<br>
+            • Engagement strategies to grow audience & brand awareness<br><br>
+
+            <b>Digital Branding & Graphics</b><br>
+            • Logo design, brand identity kits, and visual content<br>
+            • Flyers, posters, and social media creatives<br>
+            • Video editing and promotional reels<br><br>
+
+            <b>Content & Copywriting</b><br>
+            • Website content, blogs, and product descriptions<br>
+            • Engaging ad copies for campaigns<br>
+            • Professional business presentations and profiles<br><br>
+
+            <b>Email & Digital Campaigns</b><br>
+            • Targeted email marketing<br>
+            • Newsletter design and automation<br>
+            • Analytics and performance reports<br><br>
+
+            <b>Why Choose Us?</b><br>
+            • <b>Creative & Modern Approach</b> – Designs that capture attention<br>
+            • <b>Full Digital Package</b> – Website + SEO + Social Media under one roof<br>
+            • <b>Customized Solutions</b> – Tailored to startups, corporates, colleges, and NGOs<br>
+            • <b>Reliable Support</b> – Long-term maintenance and upgrades available<br>
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 8 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Recruitment Services (IT & Non-IT)</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/training.png" alt="Recruitment Services (IT & Non-IT) 1">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p>
+            Finding the right talent is the key to building a successful business.<br>
+            We specialize in <b>end-to-end recruitment solutions</b> for both <b>IT and Non-IT roles</b>, ensuring organizations get the right candidates while job seekers find the right opportunities.
+            <br>
+
+            <b>IT Recruitment</b><br>
+            We connect companies with skilled professionals across all levels of IT.<br>
+            Our process ensures <b>technical expertise</b> and <b>cultural fit</b> for every hire.<br>
+            • Software Developers (Full-stack, Frontend, Backend, Mobile App)<br>
+            • Web Developers & Designers<br>
+            • Data Analysts & Data Scientists<br>
+            • Cloud & DevOps Engineers<br>
+            • Cybersecurity Experts<br>
+            • QA/Test Engineers<br>
+            • IT Support & System Administrators<br>
+            • Project Managers & Business Analysts<br><br>
+
+            <b>Our IT Hiring Approach:</b><br>
+            ✔ Technical screening and skill assessments<br>
+            ✔ Pre-verified candidates to save company time<br>
+            ✔ Placement for both permanent and contract roles<br><br>
+
+            <b>Non-IT Recruitment</b><br>
+            We provide reliable manpower solutions for <b>non-technical roles</b> across industries.<br><br>
+
+            <b>Key Non-IT Roles We Hire For:</b><br>
+            • <b>Tele-calling Executives</b> – Customer support, lead generation, and sales calling<br>
+            • <b>Business Development Executives</b> – Connecting with companies for meetings & partnerships<br>
+            • <b>Operations Staff</b> – Office admin, back-office support, HR, and coordination roles<br>
+            • <b>Sales & Marketing</b> – Field executives, marketing coordinators, retail sales staff<br>
+            • <b>Front Office & Receptionists</b> – Client handling, appointment scheduling, visitor management<br><br>
+
+            <b>Our Non-IT Hiring Approach:</b><br>
+            ✔ Soft skills & communication-focused screening<br>
+            ✔ Training support for tele-calling & client handling<br>
+            ✔ Flexible staffing options (full-time, part-time, contract)<br><br>
+
+            <b>Why Choose Us for Recruitment?</b><br>
+            • <b>Wide Talent Pool</b> – Pre-screened candidates for quick hiring<br>
+            • <b>End-to-End Hiring</b> – From job posting to final onboarding<br>
+            • <b>Customized Solutions</b> – Tailored hiring for startups, corporates, and SMEs<br>
+            • <b>Quick Turnaround</b> – Fast candidate sourcing to meet urgent requirements<br>
+            • <b>Dual Focus</b> – IT specialists + Non-IT workforce for diverse needs<br><br>
+
+            <b>Who We Serve</b><br>
+            • <b>Corporates & Enterprises</b> – Large-scale hiring for IT and operations<br>
+            • <b>Startups & SMEs</b> – Cost-effective hiring with a focus on growth roles<br>
+            • <b>Educational Institutions & NGOs</b> – Tele-calling, admin, and operational staff<br>
+            • <b>Recruitment for Events & Projects</b> – Short-term manpower supply<br>
+  </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- CARD 9 -->
+  <article class="os-card">
+    <button class="os-header" aria-expanded="false">
+      <span class="os-title">Salary Management & Investment Services</span>
+      <span class="os-toggle" aria-hidden="true">+</span>
+    </button>
+
+    <div class="os-content" hidden>
+      <div class="os-tabs" role="tablist">
+        <button class="os-tab is-active" role="tab" aria-selected="true" data-target="images">Images</button>
+        <button class="os-tab" role="tab" aria-selected="false" data-target="details">Details</button>
+      </div>
+
+      <div class="os-pane os-pane--images">
+        <div class="os-gallery">
+          <div class="os-main">
+            <img src="images/invest.png" alt="Salary Management & Investment Services">
+          </div>
+        </div>
+      </div>
+
+      <div class="os-pane os-pane--details" hidden>
+        <p>
+            Managing salaries and planning investments can be challenging for both companies and individuals.<br>
+            We provide <b>end-to-end payroll management solutions</b> along with <b>personalized investment guidance</b> to help organizations stay compliant and employees secure their financial future.
+            <br>
+
+            <b>1. Salary / Payroll Management</b><br>
+            We ensure accurate, timely, and compliant salary processing for companies of all sizes.<br><br>
+
+            <b>Our Payroll Services Include:</b><br>
+            • Monthly salary calculation & disbursement<br>
+            • Tax (TDS) computation and deductions<br>
+            • Provident Fund (PF), ESI, and gratuity compliance<br>
+            • Payslip generation & digital record-keeping<br>
+            • Reimbursement and incentive management<br>
+            • Full & final settlement of employees<br><br>
+
+            ✔ <b>Benefits for Companies:</b> Saves time, reduces errors, and ensures compliance.<br>
+            ✔ <b>Benefits for Employees:</b> Transparent, timely, and hassle-free salary credit.<br><br>
+
+            <b>2. Investment Planning & Advisory</b><br>
+            We help individuals and employees grow their wealth with smart, risk-balanced investment options.<br><br>
+
+            <b>Our Investment Solutions Cover:</b><br>
+            • <b>Mutual Funds & SIPs</b> – Systematic, disciplined investment for long-term growth<br>
+            • <b>Insurance Planning</b> – Life, health, and term insurance solutions<br>
+            • <b>Tax-saving Investments</b> – Section 80C, ELSS, PPF, and other instruments<br>
+            • <b>Retirement Planning</b> – Pension plans, long-term savings, and wealth security<br>
+            • <b>Corporate Investment Support</b> – Employee benefit schemes and investment-linked savings plans<br><br>
+
+            ✔ <b>Benefits for Individuals:</b> Better financial security and higher returns.<br>
+            ✔ <b>Benefits for Employers:</b> Helps attract & retain talent by offering financial wellness support.<br><br>
+
+            <b>Why Choose Us?</b><br>
+            • <b>End-to-End Solutions</b> – Payroll + Investments under one roof<br>
+            • <b>Accuracy & Compliance</b> – Zero errors in salary and statutory processes<br>
+            • <b>Expert Advisory</b> – Personalized financial guidance for employees and businesses<br>
+            • <b>Confidential & Reliable</b> – Secure handling of employee and financial data<br><br>
+
+            <b>Who We Serve</b><br>
+            • <b>Companies & Startups</b> – Payroll processing, compliance, and employee benefit schemes<br>
+            • <b>Working Professionals</b> – Salary-linked investments, tax planning, and retirement solutions<br>
+            • <b>Institutions & SMEs</b> – Complete payroll outsourcing and staff investment support<br>
+            </p>
+      </div>
+    </div>
+  </article>
+
+
+  <!-- Duplicate more cards as needed, keeping the same structure -->
+</section>
+<script>
+  // Ensure code runs after DOM is ready
+  (function () {
+    const section = document.getElementById('other-services');
+    if (!section) return;
+
+    const cards = [...section.querySelectorAll('.os-card')];
+
+    // Expand / collapse cards
+    cards.forEach(card => {
+      const header = card.querySelector('.os-header');
+      const content = card.querySelector('.os-content');
+      const toggle = card.querySelector('.os-toggle');
+
+      const setMaxHeight = () => {
+        // recalc after images load / thumbnail switch
+        content.style.maxHeight = content.scrollHeight + 'px';
+      };
+
+      header.addEventListener('click', () => {
+        const isOpen = card.classList.contains('open');
+
+        // Close others
+        cards.forEach(c => {
+          if (c !== card) {
+            c.classList.remove('open');
+            const cc = c.querySelector('.os-content');
+            const tg = c.querySelector('.os-toggle');
+            cc.style.maxHeight = null;
+            c.querySelector('.os-header').setAttribute('aria-expanded', 'false');
+            tg.textContent = '+';
+            cc.hidden = true;
+          }
+        });
+
+        // Toggle current
+        if (isOpen) {
+          card.classList.remove('open');
+          content.style.maxHeight = null;
+          header.setAttribute('aria-expanded', 'false');
+          toggle.textContent = '+';
+          // hide after animation
+          setTimeout(() => { content.hidden = true; }, 300);
+        } else {
+          card.classList.add('open');
+          content.hidden = false;
+          header.setAttribute('aria-expanded', 'true');
+          toggle.textContent = '−';
+          setMaxHeight();
+
+          // Recalc when images finish loading
+          content.querySelectorAll('img').forEach(img => {
+            if (!img.complete) {
+              img.addEventListener('load', setMaxHeight, { once: true });
+            }
+          });
+        }
+      });
+
+      // Tabs: Images / Details
+      const tabs = card.querySelectorAll('.os-tab');
+      const paneImages = card.querySelector('.os-pane--images');
+      const paneDetails = card.querySelector('.os-pane--details');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
+
+          const target = tab.dataset.target;
+          if (target === 'images') {
+            paneImages.hidden = false;
+            paneDetails.hidden = true;
+          } else {
+            paneImages.hidden = true;
+            paneDetails.hidden = false;
+          }
+          // adjust height after switch
+          if (card.classList.contains('open')) {
+            setTimeout(() => {
+              content.style.maxHeight = content.scrollHeight + 'px';
+            }, 0);
+          }
+        });
+      });
+
+      // Thumbnails → main image swap
+      const mainImg = card.querySelector('.os-main img');
+      const thumbs = card.querySelectorAll('.os-thumbs img');
+      thumbs.forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          thumbs.forEach(t => t.classList.remove('is-active'));
+          thumb.classList.add('is-active');
+          const newSrc = thumb.dataset.full || thumb.src;
+          if (newSrc !== mainImg.src) {
+            mainImg.src = newSrc;
+            // resize height after image load
+            if (!mainImg.complete) {
+              mainImg.addEventListener('load', () => {
+                if (card.classList.contains('open')) {
+                  content.style.maxHeight = content.scrollHeight + 'px';
+                }
+              }, { once: true });
+            } else {
+              if (card.classList.contains('open')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+              }
+            }
+          }
+        });
+      });
+    });
+  })();
+</script>
+
+<!-- Contact Section -->
+<section id="contact">
+  <h2 class="section-title">📞 Contact Us</h2>
+
+  <div class="contact-item">
+    <i class="fas fa-phone"></i>
+    <a href="tel:+918105524482">+91 81055 24482</a>
+  </div>
+
+  <div class="contact-item">
+    <i class="fas fa-envelope"></i>
+    <a href="mailto:ashmita.bdm@sarvaastra.in">ashmita.bdm@sarvaastra.in</a>
+  </div>
+
+  <div class="contact-item">
+    <i class="fas fa-map-marker-alt"></i>
+    <a href="https://www.google.com/maps/search/?api=1&query=Vijaynagar" target="_blank">
+      Vijaynagar
+    </a>
+  </div>
+</section>
+
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> SARVAASTRA. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
