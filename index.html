@@ -266,24 +266,19 @@ const firebaseConfig = {
       };
 
         // Replace your fetch with this
-        fetch("/api/submitForm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+            fetch(scriptURL, {
+            method: "POST",
+            body: JSON.stringify(data),
+            mode: "no-cors"
         })
-        .then(res => res.text())
-        .then(text => {
-        result.innerHTML += `<p style="color: lightgreen;">Server says: ${text}</p>`;
+        .then(() => {
+            result.innerHTML += `<p style="color: lightgreen;">Form submitted successfully! (no-cors)</p>`;
         })
         .catch(err => {
-        console.error(err);
-        result.innerHTML += `<p style="color: red;">❌ Failed to submit form</p>`;
+            console.error("❌ Network error:", err);
+            result.innerHTML += `<p style="color: red;">❌ Failed to submit form (no-cors)</p>`;
         });
-
-
-
-
-    });
+});
   </script>
 </section>
 
