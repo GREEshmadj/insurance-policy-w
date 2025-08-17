@@ -265,6 +265,7 @@ const firebaseConfig = {
         maturity
       };
 
+        // Replace your fetch with this
         fetch("/api/submitForm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -272,14 +273,13 @@ const firebaseConfig = {
         })
         .then(res => res.text())
         .then(text => {
-        document.getElementById("result").innerHTML += 
-            `<p style="color: lightgreen;">Server says: ${text}</p>`;
+        result.innerHTML += `<p style="color: lightgreen;">Server says: ${text}</p>`;
         })
         .catch(err => {
         console.error(err);
-        document.getElementById("result").innerHTML += 
-            `<p style="color: red;">❌ Failed to submit form</p>`;
+        result.innerHTML += `<p style="color: red;">❌ Failed to submit form</p>`;
         });
+
 
 
     });
